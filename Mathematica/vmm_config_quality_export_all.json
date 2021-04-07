@@ -1,0 +1,8 @@
+{
+	"downsample_factor":1,
+	"feature_dectector":"SURF",
+	"export_intermediates":true,
+	"perform_inpaint":true,
+	"perform_brightness_equalization":true,
+	"qc_registered_shifts":true
+}

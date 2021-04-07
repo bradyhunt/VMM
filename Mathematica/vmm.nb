@@ -1,0 +1,1992 @@
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[         0,          0]
+NotebookDataLength[     81220,       1991]
+NotebookOptionsPosition[     78055,       1922]
+NotebookOutlinePosition[     78487,       1939]
+CellTagsIndexPosition[     78444,       1936]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"MeanImage", "[", "imgs_", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "imgType", ",", "maxValue", ",", "total", ",", "normalize", ",", 
+        "mean"}], "}"}], ",", "\n", "\t", 
+      RowBox[{
+       RowBox[{"imgType", " ", "=", " ", 
+        RowBox[{"ImageType", "[", 
+         RowBox[{"First", "@", "imgs"}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"total", " ", "=", " ", 
+        RowBox[{"Total", "[", 
+         RowBox[{"Map", "[", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"ImageData", "[", 
+              RowBox[{"#", ",", "imgType"}], "]"}], "&"}], ")"}], ",", 
+           "imgs"}], "]"}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"normalize", " ", "=", " ", 
+        RowBox[{"ConstantArray", "[", 
+         RowBox[{
+          RowBox[{"1", "/", 
+           RowBox[{"(", 
+            RowBox[{"Length", "[", "imgs", "]"}], ")"}]}], ",", 
+          RowBox[{"Dimensions", "[", 
+           RowBox[{"First", "[", "imgs", "]"}], "]"}]}], "]"}]}], ";", "\n", 
+       "\t", 
+       RowBox[{"mean", " ", "=", " ", 
+        RowBox[{"Image", "[", 
+         RowBox[{
+          RowBox[{"total", "*", "normalize"}], ",", 
+          RowBox[{"ImageType", "[", 
+           RowBox[{"First", "[", "imgs", "]"}], "]"}]}], "]"}]}], ";", "\n", 
+       "\t", 
+       RowBox[{"Return", "[", "mean", "]"}], ";"}]}], "\n", "]"}]}], ";"}], 
+  "\n", "\n", 
+  RowBox[{"(*", " ", 
+   RowBox[{"ROI", " ", "Mask", " ", "Functions"}], " ", "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"EdgeCoords", "[", "binaryMask_", "]"}], ":=", 
+   RowBox[{"Position", "[", 
+    RowBox[{
+     RowBox[{"Reverse", "/@", 
+      RowBox[{"Transpose", "[", 
+       RowBox[{"IntegerPart", "[", 
+        RowBox[{"ImageData", "[", "binaryMask", "]"}], "]"}], "]"}]}], ",", 
+     "1"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"FitCircleToPoints", "[", "pts_", "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "reg", ",", "lm", ",", "bf", ",", "exp", ",", "center", ",", "rad", 
+        ",", "fitError", ",", "fitAssoc"}], "}"}], ",", "\n", "\t", 
+      RowBox[{
+       RowBox[{"reg", "=", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"2", " ", "#1"}], ",", 
+            RowBox[{"2", " ", "#2"}], ",", 
+            RowBox[{
+             RowBox[{"#2", "^", "2"}], "+", 
+             RowBox[{"#1", "^", "2"}]}]}], "}"}], "&"}], "@@@", "pts"}]}], 
+       ";", "\n", "\t", 
+       RowBox[{"lm", "=", 
+        RowBox[{"LinearModelFit", "[", 
+         RowBox[{"reg", ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", "x", ",", "y"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"x", ",", "y"}], "}"}]}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"bf", "=", 
+        RowBox[{"lm", "[", "\"\<BestFitParameters\>\"", "]"}]}], ";", "\n", 
+       "\t", 
+       RowBox[{"exp", "=", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"x", "-", "#2"}], ")"}], "^", "2"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"y", "-", "#3"}], ")"}], "^", "2"}], "-", "#1", "-", 
+           RowBox[{"#2", "^", "2"}], "-", 
+           RowBox[{"#3", "^", "2"}]}], "&"}], "@@", "bf"}]}], ";", "\n", "\t", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"center", ",", "rad"}], "}"}], "=", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{"#2", ",", "#3"}], "}"}], ",", 
+            RowBox[{"Sqrt", "[", 
+             RowBox[{
+              RowBox[{"#2", "^", "2"}], "+", 
+              RowBox[{"#3", "^", "2"}], "+", "#1"}], "]"}]}], "}"}], "&"}], "@@",
+          "bf"}]}], ";", "\n", "\t", 
+       RowBox[{"fitError", "=", 
+        RowBox[{"Mean", "[", 
+         RowBox[{"Abs", "[", 
+          RowBox[{"lm", "[", "\"\<FitResiduals\>\"", "]"}], "]"}], "]"}]}], 
+       ";", "\n", "\t", 
+       RowBox[{"fitAssoc", "=", 
+        RowBox[{"Association", "[", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"\"\<expression\>\"", "->", "exp"}], ",", 
+           RowBox[{"\"\<center\>\"", "->", "center"}], ",", 
+           RowBox[{"\"\<radius\>\"", "->", "rad"}], ",", 
+           RowBox[{"\"\<error\>\"", "->", "fitError"}]}], "}"}], "]"}]}], ";",
+        "\n", "\t", 
+       RowBox[{"Return", "[", "fitAssoc", "]"}], ";"}]}], "\n", "]"}]}], 
+   ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"CircFit", "[", 
+     RowBox[{"edgeCoords_", ",", "numPoints_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"edgeCoordsReduced", ",", "fit"}], "}"}], ",", "\n", "\t", 
+      RowBox[{
+       RowBox[{"SeedRandom", "[", "7", "]"}], ";", "\n", "\t", 
+       RowBox[{"edgeCoordsReduced", " ", "=", " ", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Length", "[", "edgeCoords", "]"}], ">", "numPoints"}], 
+          ",", 
+          RowBox[{"RandomSample", "[", 
+           RowBox[{"edgeCoords", ",", 
+            RowBox[{"UpTo", "[", "numPoints", "]"}]}], "]"}], ",", 
+          "edgeCoords"}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"fit", " ", "=", " ", 
+        RowBox[{"FitCircleToPoints", "[", "edgeCoordsReduced", "]"}]}], ";", 
+       "\n", "\t", 
+       RowBox[{"Return", "[", "fit", "]"}], ";"}]}], "\n", "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"CircleROIMask", "[", 
+     RowBox[{"img_", ",", "center_", ",", "radius_"}], "]"}], ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"bg", ",", "disk", ",", "mask"}], "}"}], ",", "\n", "\t", 
+      RowBox[{
+       RowBox[{"bg", "=", 
+        RowBox[{"Image", "[", 
+         RowBox[{"ConstantArray", "[", 
+          RowBox[{"0", ",", 
+           RowBox[{"Reverse", "[", 
+            RowBox[{"ImageDimensions", "[", "img", "]"}], "]"}]}], "]"}], 
+         "]"}]}], ";", "\n", "\t", 
+       RowBox[{"disk", " ", "=", " ", 
+        RowBox[{"Disk", "[", 
+         RowBox[{"center", ",", "radius"}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"mask", " ", "=", " ", 
+        RowBox[{"Erosion", "[", 
+         RowBox[{
+          RowBox[{"ImageResize", "[", 
+           RowBox[{
+            RowBox[{"Binarize", "[", 
+             RowBox[{"Rasterize", "[", 
+              RowBox[{"Show", "[", 
+               RowBox[{"bg", ",", 
+                RowBox[{"Graphics", "[", 
+                 RowBox[{"{", 
+                  RowBox[{"White", ",", "disk"}], "}"}], "]"}], ",", 
+                RowBox[{"ImageSize", "\[Rule]", 
+                 RowBox[{
+                  RowBox[{"ImageDimensions", "[", "img", "]"}], "/", 
+                  "2"}]}]}], "]"}], "]"}], "]"}], ",", 
+            RowBox[{"ImageDimensions", "[", "img", "]"}]}], "]"}], ",", "1"}],
+          "]"}]}], ";", "\n", "\t", 
+       RowBox[{"Return", "[", "mask", "]"}], ";"}]}], "\n", "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"BinarizeMeanImage", "[", 
+     RowBox[{"meanImage_", ",", 
+      RowBox[{"blurRadius_", ":", "10"}]}], "]"}], ":=", " ", 
+    RowBox[{"SelectComponents", "[", 
+     RowBox[{
+      RowBox[{"Binarize", "[", 
+       RowBox[{
+        RowBox[{"BrightnessEqualize", "[", 
+         RowBox[{"meanImage", ",", 
+          RowBox[{"GaussianFilter", "[", 
+           RowBox[{"meanImage", ",", "blurRadius"}], "]"}]}], "]"}], ",", 
+        RowBox[{"Method", "->", "\"\<Cluster\>\""}]}], "]"}], ",", 
+      "\"\<Area\>\"", ",", 
+      RowBox[{"-", "1"}]}], "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"MeanImageROIMask", "[", 
+     RowBox[{"meanImage_", ",", 
+      RowBox[{"innerRadiusCrop_", ":", "15"}]}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "binaryMask", ",", "edgeMask", ",", "edgeCoords", ",", " ", "roiMask", 
+        ",", "circfit", ",", "roiMaskInner", ",", "deadPixelMask"}], "}"}], 
+      ",", "\n", "\t", 
+      RowBox[{
+       RowBox[{"binaryMask", " ", "=", " ", 
+        RowBox[{"BinarizeMeanImage", "[", "meanImage", "]"}]}], ";", "\n", 
+       "\t", 
+       RowBox[{"edgeMask", " ", "=", " ", 
+        RowBox[{"Dilation", "[", 
+         RowBox[{
+          RowBox[{"EdgeDetect", "[", 
+           RowBox[{"FillingTransform", "[", "binaryMask", "]"}], "]"}], ",", 
+          "1"}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"circfit", " ", "=", " ", 
+        RowBox[{"CircFit", "[", 
+         RowBox[{
+          RowBox[{"EdgeCoords", "[", "edgeMask", "]"}], ",", "100"}], "]"}]}],
+        ";", "\n", "\t", 
+       RowBox[{"roiMask", " ", "=", " ", 
+        RowBox[{"CircleROIMask", "[", 
+         RowBox[{"meanImage", ",", 
+          RowBox[{"circfit", "[", "\"\<center\>\"", "]"}], ",", 
+          RowBox[{"circfit", "[", "\"\<radius\>\"", "]"}]}], "]"}]}], ";", 
+       "\n", "\t", 
+       RowBox[{"roiMaskInner", " ", "=", " ", 
+        RowBox[{"CircleROIMask", "[", 
+         RowBox[{"meanImage", ",", 
+          RowBox[{"circfit", "[", "\"\<center\>\"", "]"}], ",", 
+          RowBox[{
+           RowBox[{"circfit", "[", "\"\<radius\>\"", "]"}], "-", 
+           "innerRadiusCrop"}]}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"deadPixelMask", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"ColorNegate", "[", "binaryMask", "]"}], "-", 
+         RowBox[{"Dilation", "[", 
+          RowBox[{
+           RowBox[{"ColorNegate", "[", "roiMask", "]"}], ",", 
+           RowBox[{"DiskMatrix", "[", "3", "]"}]}], "]"}]}]}], ";", "\n", 
+       "\t", 
+       RowBox[{"Return", "[", 
+        RowBox[{"{", 
+         RowBox[{
+         "binaryMask", ",", "roiMask", ",", "roiMaskInner", ",", 
+          "deadPixelMask"}], "}"}], "]"}], ";"}]}], "\n", "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"VMMBrightnessEqualize", "[", 
+     RowBox[{"img_", ",", "imgROIMask_", ",", "meanImg_"}], "]"}], ":=", " ", 
+    
+    RowBox[{"ImageMultiply", "[", 
+     RowBox[{
+      RowBox[{"Lighter", "[", 
+       RowBox[{"Image", "[", 
+        RowBox[{
+         RowBox[{"BrightnessEqualize", "[", 
+          RowBox[{"img", ",", "meanImg", ",", 
+           RowBox[{"ColorNegate", "[", "imgROIMask", "]"}]}], "]"}], ",", 
+         "\"\<Byte\>\""}], "]"}], "]"}], ",", "imgROIMask"}], "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"WriteLineToStdOut", "[", "str_", "]"}], ":=", " ", 
+   RowBox[{"WriteString", "[", 
+    RowBox[{"\"\<stdout\>\"", ",", 
+     RowBox[{"str", "<>", "\"\<\\n\>\""}]}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"FormatTimeString", "[", "t_", "]"}], ":=", 
+   RowBox[{"ToString", "[", 
+    RowBox[{"NumberForm", "[", 
+     RowBox[{"t", ",", 
+      RowBox[{"{", 
+       RowBox[{"4", ",", "3"}], "}"}]}], "]"}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"ExportFile", "[", 
+    RowBox[{
+    "fileName_", ",", "expr_", ",", " ", "outputDir_", ",", " ", 
+     "exportFlag_"}], "]"}], ":=", " ", 
+   RowBox[{"If", "[", 
+    RowBox[{"exportFlag", ",", 
+     RowBox[{"Export", "[", 
+      RowBox[{
+       RowBox[{"FileNameJoin", "[", 
+        RowBox[{"{", 
+         RowBox[{"outputDir", ",", "fileName"}], "}"}], "]"}], ",", "expr"}], 
+      "]"}], ",", 
+     RowBox[{"OverwriteTarget", "->", "True"}]}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"ExportFiles", "[", 
+     RowBox[{
+     "fileNames_", ",", "exprs_", ",", " ", "outputDir_", ",", " ", 
+      "exportFlag_"}], "]"}], ":=", 
+    RowBox[{"MapThread", "[", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"ExportFile", "[", 
+         RowBox[{"#1", ",", "#2", ",", "outputDir", ",", "exportFlag"}], 
+         "]"}], "&"}], ")"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"fileNames", ",", "exprs"}], "}"}]}], "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"ImageSharpness", "[", 
+     RowBox[{"img_", ",", 
+      RowBox[{"imgROIMask_", ":", 
+       RowBox[{"Missing", "[", "]"}]}], ",", 
+      RowBox[{"kernelSize_", ":", "2"}]}], "]"}], ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "imgSatMask", ",", "imgROIMask2", ",", "imgROIMask3", ",", 
+        "sharpnessMetric"}], "}"}], ",", "\n", 
+      RowBox[{
+       RowBox[{"imgROIMask2", " ", "=", " ", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{"MissingQ", "[", "imgROIMask", "]"}], ",", 
+          RowBox[{"ConstantArray", "[", 
+           RowBox[{"1", ",", 
+            RowBox[{"Reverse", "[", 
+             RowBox[{"ImageDimensions", "[", "img", "]"}], "]"}]}], "]"}], 
+          ",", "imgROIMask"}], "]"}]}], ";", "\n", 
+       RowBox[{"imgSatMask", " ", "=", " ", 
+        RowBox[{"Dilation", "[", 
+         RowBox[{
+          RowBox[{"Binarize", "[", 
+           RowBox[{"img", ",", "0.9"}], "]"}], ",", 
+          RowBox[{"DiskMatrix", "[", "5", "]"}]}], "]"}]}], ";", "\n", 
+       RowBox[{"imgROIMask3", " ", "=", " ", 
+        RowBox[{"imgROIMask2", "-", "imgSatMask"}]}], ";", "\n", 
+       RowBox[{"sharpnessMetric", " ", "=", " ", 
+        RowBox[{"ImageMeasurements", "[", 
+         RowBox[{
+          RowBox[{"LaplacianGaussianFilter", "[", 
+           RowBox[{"img", ",", "kernelSize"}], "]"}], ",", 
+          "\"\<StandardDeviation\>\"", ",", 
+          RowBox[{"Masking", "->", "imgROIMask3"}]}], "]"}]}], ";", "\n", 
+       RowBox[{"Return", "[", "sharpnessMetric", "]"}], ";"}]}], "\n", 
+     "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"ImageShiftWithROI", "[", 
+     RowBox[{"imgs_", ",", "roiMask_", ",", "features_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "img1", ",", "img2", ",", "matches", ",", "numPoints", ",", "err", ",",
+         "tr", ",", "shiftX", ",", "shiftY", ",", "shiftNorm", ",", 
+        "returnAssoc"}], "}"}], ",", "\n", "\t", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"img1", ",", "img2"}], "}"}], " ", "=", " ", "imgs"}], ";", 
+       "\n", "\t", 
+       RowBox[{"matches", " ", "=", " ", 
+        RowBox[{"ImageCorrespondingPoints", "[", 
+         RowBox[{"img1", ",", "img2", ",", 
+          RowBox[{"TransformationClass", "->", "\"\<Translation\>\""}], ",", 
+          RowBox[{"Method", "->", "features"}], ",", 
+          RowBox[{"Masking", "->", "roiMask"}]}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"numPoints", " ", "=", " ", 
+        RowBox[{"Length", "[", 
+         RowBox[{"Transpose", "[", "matches", "]"}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"numPoints", "==", "0"}], ",", " ", 
+         RowBox[{"Return", "[", 
+          RowBox[{"AssociationThread", "[", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+             "\"\<NUM_PTS\>\"", ",", "\"\<ERR\>\"", ",", "\"\<SHIFT_X\>\"", 
+              ",", "\"\<SHIFT_Y\>\"", ",", "\"\<SHIFT_NORM\>\""}], "}"}], "->", 
+            RowBox[{"{", 
+             RowBox[{"numPoints", ",", 
+              RowBox[{"Missing", "[", "]"}], ",", 
+              RowBox[{"Missing", "[", "]"}], ",", 
+              RowBox[{"Missing", "[", "]"}], ",", 
+              RowBox[{"Missing", "[", "]"}]}], "}"}]}], "]"}], "]"}]}], "]"}],
+        ";", "\n", "\t", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"err", ",", "tr"}], "}"}], "=", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"FindGeometricTransform", "[", 
+            RowBox[{"#1", ",", "#2", ",", 
+             RowBox[{"TransformationClass", "->", "\"\<Translation\>\""}]}], 
+            "]"}], "&"}], ")"}], "@@", "matches"}]}], ";", "\n", "\t", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"shiftX", ",", "shiftY"}], "}"}], "=", 
+        RowBox[{"Round", "[", 
+         RowBox[{"tr", "@", 
+          RowBox[{"{", 
+           RowBox[{"0", ",", "0"}], "}"}]}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"shiftNorm", " ", "=", " ", 
+        RowBox[{"N", "[", 
+         RowBox[{"Norm", "[", 
+          RowBox[{"{", 
+           RowBox[{"shiftX", ",", "shiftY"}], "}"}], "]"}], "]"}]}], ";", 
+       "\n", "\t", 
+       RowBox[{"returnAssoc", "=", 
+        RowBox[{"AssociationThread", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<NUM_PTS\>\"", ",", "\"\<ERR\>\"", ",", "\"\<SHIFT_X\>\"", 
+            ",", "\"\<SHIFT_Y\>\"", ",", "\"\<SHIFT_NORM\>\""}], "}"}], "->", 
+          
+          RowBox[{"{", 
+           RowBox[{
+           "numPoints", ",", "err", ",", "shiftX", ",", "shiftY", ",", 
+            "shiftNorm"}], "}"}]}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"Return", "[", "returnAssoc", "]"}], ";"}]}], "\n", "]"}]}], 
+   ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"RegisterShifts", "[", 
+     RowBox[{"images_", ",", "roiMask_", ",", "roiMaskInner_", ",", 
+      RowBox[{"features_", ":", "\"\<SURF\>\""}]}], "]"}], ":=", " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "shiftAssocs", "}"}], ",", "\n", "\t", "\n", "\t", 
+      RowBox[{
+       RowBox[{"shiftAssocs", " ", "=", " ", 
+        RowBox[{"ParallelMap", "[", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"ImageShiftWithROI", "[", 
+             RowBox[{"#", ",", "roiMask", ",", "features"}], "]"}], "&"}], 
+           ")"}], ",", 
+          RowBox[{"Partition", "[", 
+           RowBox[{"images", ",", "2", ",", "1"}], "]"}]}], "]"}]}], ";", 
+       "\n", "\t", 
+       RowBox[{"shiftAssocs", " ", "=", " ", 
+        RowBox[{"Prepend", "[", 
+         RowBox[{"shiftAssocs", ",", 
+          RowBox[{"<|", 
+           RowBox[{
+            RowBox[{"\"\<NUM_PTS\>\"", "->", 
+             RowBox[{"Missing", "[", "]"}]}], ",", 
+            RowBox[{"\"\<ERR\>\"", "->", 
+             RowBox[{"Missing", "[", "]"}]}], ",", 
+            RowBox[{"\"\<SHIFT_X\>\"", "->", "0"}], ",", 
+            RowBox[{"\"\<SHIFT_Y\>\"", "->", "0"}], ",", 
+            RowBox[{"\"\<SHIFT_NORM\>\"", "->", "0.`"}]}], "|>"}]}], "]"}]}], 
+       ";", "\n", "\t", 
+       RowBox[{
+        RowBox[{"shiftAssocs", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", "\"\<FRAME_NUM\>\""}], "]"}], "]"}], "=", 
+        RowBox[{"Range", "[", 
+         RowBox[{"Length", "[", "shiftAssocs", "]"}], "]"}]}], ";", "\n", 
+       "\t", 
+       RowBox[{"shiftAssocs", " ", "=", " ", 
+        RowBox[{"shiftAssocs", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", 
+           RowBox[{"{", 
+            RowBox[{
+            "\"\<FRAME_NUM\>\"", ",", "\"\<NUM_PTS\>\"", ",", "\"\<ERR\>\"", 
+             ",", "\"\<SHIFT_X\>\"", ",", "\"\<SHIFT_Y\>\"", ",", 
+             "\"\<SHIFT_NORM\>\""}], "}"}]}], "]"}], "]"}]}], ";", "\n", "\t",
+        "\n", "\t", 
+       RowBox[{"Return", "[", "shiftAssocs", "]"}], ";"}]}], "\n", "]"}]}], 
+   ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"QCShifts", "[", 
+     RowBox[{"images_", ",", " ", "roiMaskInner_", ",", " ", "shiftAssocs_"}],
+      "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "shiftAssocsCopy", ",", " ", "neighborDistances", ",", 
+        "shiftConversionFactor", ",", "moveAvgSampleSize", ",", "\n", "\t", 
+        "centerCoord", ",", "registerErrorFunc", ",", "distanceParams", ",", 
+        "distanceParamsRandShuffled", ",", "shiftErrors", ",", 
+        "shiftErrorsRand"}], "}"}], ",", "\n", "\t", "\n", "\t", 
+      RowBox[{
+       RowBox[{"shiftAssocsCopy", " ", "=", " ", "shiftAssocs"}], ";", "\n", 
+       "\t", 
+       RowBox[{"neighborDistances", "=", 
+        RowBox[{"Append", "[", 
+         RowBox[{
+          RowBox[{"Prepend", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"N", "[", 
+                RowBox[{"Mean", "[", 
+                 RowBox[{"{", 
+                  RowBox[{
+                   RowBox[{"EuclideanDistance", "[", 
+                    RowBox[{"#1", ",", "#2"}], "]"}], ",", 
+                   RowBox[{"EuclideanDistance", "[", 
+                    RowBox[{"#2", ",", "#3"}], "]"}]}], "}"}], "]"}], "]"}], 
+               "&"}], ")"}], "@@@", 
+             RowBox[{"Partition", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"Values", "[", 
+                 RowBox[{"shiftAssocsCopy", "[", 
+                  RowBox[{"[", 
+                   RowBox[{"All", ",", 
+                    RowBox[{"{", 
+                    RowBox[{"\"\<SHIFT_X\>\"", ",", "\"\<SHIFT_Y\>\""}], 
+                    "}"}]}], "]"}], "]"}], "]"}], "/.", 
+                RowBox[{"{", 
+                 RowBox[{
+                  RowBox[{"Missing", "[", "]"}], "->", "0"}], "}"}]}], ",", 
+               "3", ",", "1"}], "]"}]}], ",", "0"}], "]"}], ",", "0"}], 
+         "]"}]}], ";", "\n", "\t", 
+       RowBox[{
+        RowBox[{"shiftAssocsCopy", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", "\"\<NEIGHBOR_DIST\>\""}], "]"}], "]"}], " ", 
+        "=", " ", "neighborDistances"}], ";", "\n", "\t", 
+       RowBox[{
+        RowBox[{"shiftAssocsCopy", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", "\"\<SHARPNESS\>\""}], "]"}], "]"}], "=", 
+        RowBox[{"ParallelMap", "[", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"ImageSharpness", "[", 
+             RowBox[{"#", ",", "roiMaskInner"}], "]"}], "&"}], ")"}], ",", 
+          "images"}], "]"}]}], ";", "\n", "\t", "\n", "\t", 
+       RowBox[{"distanceParams", " ", "=", " ", 
+        RowBox[{"MapThread", "[", 
+         RowBox[{"Append", ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"Partition", "[", 
+             RowBox[{"images", ",", "2", ",", "1"}], "]"}], ",", 
+            RowBox[{
+             RowBox[{"Rest", "[", 
+              RowBox[{"Values", "[", 
+               RowBox[{"shiftAssocsCopy", "[", 
+                RowBox[{"[", 
+                 RowBox[{"All", ",", 
+                  RowBox[{"{", 
+                   RowBox[{"\"\<SHIFT_X\>\"", ",", "\"\<SHIFT_Y\>\""}], 
+                   "}"}]}], "]"}], "]"}], "]"}], "]"}], "/.", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"Missing", "[", "]"}], "->", "0"}], "}"}]}]}], "}"}]}],
+          "]"}]}], ";", "\n", "\t", 
+       RowBox[{"SeedRandom", "[", "7", "]"}], ";", "\n", "\t", 
+       RowBox[{"distanceParamsRandShuffled", " ", "=", " ", 
+        RowBox[{"MapThread", "[", 
+         RowBox[{"Append", ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"Partition", "[", 
+             RowBox[{
+              RowBox[{"RandomSample", "[", "images", "]"}], ",", "2", ",", 
+              "1"}], "]"}], ",", 
+            RowBox[{
+             RowBox[{"Rest", "[", 
+              RowBox[{"Values", "[", 
+               RowBox[{"shiftAssocsCopy", "[", 
+                RowBox[{"[", 
+                 RowBox[{"All", ",", 
+                  RowBox[{"{", 
+                   RowBox[{"\"\<SHIFT_X\>\"", ",", "\"\<SHIFT_Y\>\""}], 
+                   "}"}]}], "]"}], "]"}], "]"}], "]"}], "/.", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"Missing", "[", "]"}], "->", "0"}], "}"}]}]}], "}"}]}],
+          "]"}]}], ";", "\n", "\t", "\n", "\t", 
+       RowBox[{"centerCoord", " ", "=", " ", 
+        RowBox[{"Round", "[", 
+         RowBox[{
+          RowBox[{"ImageDimensions", "[", 
+           RowBox[{"First", "@", "images"}], "]"}], "/", "2"}], "]"}]}], ";", 
+       "\n", "\t", 
+       RowBox[{"SetSharedVariable", "[", "centerCoord", "]"}], ";", "\n", 
+       "\t", 
+       RowBox[{"registerErrorFunc", " ", "=", " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"ImageDistance", "[", 
+           RowBox[{
+            RowBox[{"#", "[", 
+             RowBox[{"[", "1", "]"}], "]"}], ",", 
+            RowBox[{"#", "[", 
+             RowBox[{"[", "2", "]"}], "]"}], ",", "centerCoord", ",", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{"Or", "@@", 
+               RowBox[{"MapThread", "[", 
+                RowBox[{"Greater", ",", 
+                 RowBox[{"{", 
+                  RowBox[{
+                   RowBox[{"Abs", "/@", 
+                    RowBox[{"#", "[", 
+                    RowBox[{"[", "3", "]"}], "]"}]}], ",", "centerCoord"}], 
+                  "}"}]}], "]"}]}], ",", "centerCoord", ",", 
+              RowBox[{"centerCoord", "-", 
+               RowBox[{"#", "[", 
+                RowBox[{"[", "3", "]"}], "]"}]}]}], "]"}], ",", 
+            RowBox[{"Masking", "->", 
+             RowBox[{"{", 
+              RowBox[{"roiMaskInner", ",", "roiMaskInner"}], "}"}]}], ",", 
+            RowBox[{"DistanceFunction", "->", "\"\<RootMeanSquare\>\""}]}], 
+           "]"}], "&"}], ")"}]}], ";", "\n", "\t", 
+       RowBox[{"shiftErrors", " ", "=", " ", 
+        RowBox[{"ParallelMap", "[", 
+         RowBox[{"registerErrorFunc", ",", "distanceParams"}], "]"}]}], ";", 
+       "\n", "\t", 
+       RowBox[{"shiftErrorsRand", " ", "=", " ", 
+        RowBox[{"ParallelMap", "[", 
+         RowBox[{"registerErrorFunc", ",", "distanceParamsRandShuffled"}], 
+         "]"}]}], ";", "\n", "\n", "\t", 
+       RowBox[{
+        RowBox[{"shiftAssocsCopy", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", "\"\<SHIFT_RMSE\>\""}], "]"}], "]"}], " ", "=", 
+        " ", 
+        RowBox[{"Prepend", "[", 
+         RowBox[{"shiftErrors", ",", 
+          RowBox[{"Mean", "[", "shiftErrors", "]"}]}], "]"}]}], ";", "\n", 
+       "\t", 
+       RowBox[{
+        RowBox[{"shiftAssocsCopy", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", "\"\<SHIFT_RMSE_SHUFFLE\>\""}], "]"}], "]"}], 
+        "=", 
+        RowBox[{"Prepend", "[", 
+         RowBox[{"shiftErrorsRand", ",", 
+          RowBox[{"Mean", "[", "shiftErrorsRand", "]"}]}], "]"}]}], ";", "\n",
+        "\t", 
+       RowBox[{
+        RowBox[{"shiftAssocsCopy", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", "\"\<SHIFT_RMSE_QC_10_PERCENT\>\""}], "]"}], 
+         "]"}], " ", "=", " ", 
+        RowBox[{"Quantile", "[", 
+         RowBox[{"shiftErrorsRand", ",", "0.1"}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{
+        RowBox[{"shiftAssocsCopy", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", "\"\<SHIFT_RMSE_QC_01_PERCENT\>\""}], "]"}], 
+         "]"}], " ", "=", " ", 
+        RowBox[{"Quantile", "[", 
+         RowBox[{"shiftErrorsRand", ",", "0.01"}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{
+        RowBox[{"shiftAssocsCopy", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", "\"\<SHIFT_RMSE_QC\>\""}], "]"}], "]"}], " ", 
+        "=", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{
+              "#\"SHIFT_RMSE\"", ">", "#\"SHIFT_RMSE_QC_01_PERCENT\""}], "||", 
+              RowBox[{"#\"SHARPNESS\"", "<", "0.009"}]}], ",", "1", ",", 
+             "0"}], "]"}], "&"}], " ", ")"}], "/@", "shiftAssocsCopy"}]}], 
+       ";", "\n", "\t", "\n", "\t", 
+       RowBox[{"Return", "[", "shiftAssocsCopy", "]"}], ";"}]}], "\n", 
+     "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{"SetAttributes", "[", 
+   RowBox[{"UpdateMosaicInPlaceMask", ",", "HoldFirst"}], "]"}], ";"}], "\n", 
+
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"UpdateMosaicInPlaceMask", "[", 
+     RowBox[{
+     "mosaic_", ",", "topLeftCoord_", ",", "newFrame_", ",", 
+      "newFramSubtract_", ",", "oldFrameSubstract_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "frameColSize", ",", "frameRowSize", ",", "col", ",", "row", ",", 
+        "oldFrame", ",", "newFrameMasked", ",", "oldFrameMasked", ",", 
+        "frameUpdate"}], "}"}], ",", "\n", "\t", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"frameColSize", ",", "frameRowSize"}], "}"}], " ", "=", " ", 
+        
+        RowBox[{"Dimensions", "[", "newFrame", "]"}]}], ";", "\n", "\t", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"col", ",", "row"}], "}"}], " ", "=", " ", "topLeftCoord"}], 
+       ";", "\n", "\t", 
+       RowBox[{"oldFrame", "=", 
+        RowBox[{"mosaic", "[", 
+         RowBox[{"[", 
+          RowBox[{
+           RowBox[{"col", ";;", 
+            RowBox[{"(", 
+             RowBox[{"col", "+", "frameColSize", "-", "1"}], ")"}]}], ",", 
+           RowBox[{"row", ";;", 
+            RowBox[{"(", 
+             RowBox[{"row", "+", "frameRowSize", "-", "1"}], ")"}]}]}], "]"}],
+          "]"}]}], ";", "\n", "\t", 
+       RowBox[{"newFrameMasked", " ", "=", " ", 
+        RowBox[{"newFrame", "-", "newFramSubtract"}]}], ";", "\n", "\t", 
+       RowBox[{"oldFrameMasked", " ", "=", " ", 
+        RowBox[{"oldFrame", "-", "oldFrameSubstract"}]}], ";", "\n", "\t", 
+       RowBox[{"frameUpdate", "=", 
+        RowBox[{"Map", "[", 
+         RowBox[{"Max", ",", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"Join", "[", 
+              RowBox[{"##", ",", "3"}], "]"}], "&"}], ")"}], "@@", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"ArrayReshape", "[", 
+                RowBox[{"#", ",", 
+                 RowBox[{"Append", "[", 
+                  RowBox[{
+                   RowBox[{"Dimensions", "[", "#", "]"}], ",", "1"}], "]"}]}],
+                 "]"}], "&"}], ")"}], "/@", 
+             RowBox[{"{", 
+              RowBox[{"oldFrameMasked", ",", "newFrameMasked"}], "}"}]}], 
+            ")"}]}], ",", 
+          RowBox[{"{", "2", "}"}]}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{
+        RowBox[{"mosaic", "[", 
+         RowBox[{"[", 
+          RowBox[{
+           RowBox[{"col", ";;", 
+            RowBox[{"(", 
+             RowBox[{"col", "+", "frameColSize", "-", "1"}], ")"}]}], ",", 
+           RowBox[{"row", ";;", 
+            RowBox[{"(", 
+             RowBox[{"row", "+", "frameRowSize", "-", "1"}], ")"}]}]}], "]"}],
+          "]"}], "=", "frameUpdate"}], ";"}]}], "\n", "]"}]}], ";"}], 
+  "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"BuildMosaic", "[", 
+     RowBox[{
+     "images_", ",", "shiftAssocs_", ",", "roiMaskInner_", ",", " ", 
+      "excludeQCFrames_"}], "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", "\n", "\t", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "shiftAssocsQC", ",", "padX", ",", "padY", ",", "pathNoQC", ",", 
+        "path", ",", "plotRange", ",", "pathPlot", ",", "mosaicDims", ",", 
+        "w", ",", "h", ",", "\n", "\t", "mosaic", ",", "mosaicPathCoords", 
+        ",", "imgType", ",", "framesData", ",", "frameNewSubtract", ",", 
+        "frameOldSubtract"}], "}"}], ",", "\n", "\t", "\n", "\t", 
+      RowBox[{
+       RowBox[{"padX", "=", "250"}], ";", "\n", "\t", 
+       RowBox[{"padY", "=", "250"}], ";", "\n", "\t", "\n", "\t", 
+       RowBox[{"shiftAssocsQC", " ", "=", " ", "shiftAssocs"}], ";", "\n", 
+       "\t", 
+       RowBox[{"If", "[", 
+        RowBox[{"excludeQCFrames", ",", " ", 
+         RowBox[{
+          RowBox[{"shiftAssocsQC", "[", 
+           RowBox[{"[", 
+            RowBox[{
+             RowBox[{"Flatten", "[", 
+              RowBox[{"Position", "[", 
+               RowBox[{
+                RowBox[{"shiftAssocs", "[", 
+                 RowBox[{"[", 
+                  RowBox[{"All", ",", "\"\<SHIFT_RMSE_QC\>\""}], "]"}], "]"}],
+                 ",", "1"}], "]"}], "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{
+              "\"\<SHIFT_X\>\"", ",", "\"\<SHIFT_Y\>\"", ",", 
+               "\"\<SHIFT_NORM\>\""}], "}"}]}], "]"}], "]"}], "=", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"Missing", "[", "]"}], ",", 
+            RowBox[{"Missing", "[", "]"}], ",", 
+            RowBox[{"Missing", "[", "]"}]}], "}"}]}]}], "]"}], ";", "\n", 
+       "\t", 
+       RowBox[{"path", " ", "=", " ", 
+        RowBox[{"Accumulate", "[", 
+         RowBox[{
+          RowBox[{"Values", "[", 
+           RowBox[{"shiftAssocsQC", "[", 
+            RowBox[{"[", 
+             RowBox[{"All", ",", 
+              RowBox[{"{", 
+               RowBox[{"\"\<SHIFT_X\>\"", ",", "\"\<SHIFT_Y\>\""}], "}"}]}], 
+             "]"}], "]"}], "]"}], "/.", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"Missing", "[", "]"}], "->", "0"}], "}"}]}], "]"}]}], ";",
+        "\n", "\t", 
+       RowBox[{"path", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"#", "+", 
+            RowBox[{"(", 
+             RowBox[{"Abs", "/@", 
+              RowBox[{"Min", "/@", 
+               RowBox[{"Transpose", "[", "path", "]"}]}]}], ")"}]}], "&"}], 
+          ")"}], "/@", "path"}]}], ";", "\n", "\t", 
+       RowBox[{"plotRange", " ", "=", " ", 
+        RowBox[{"Transpose", "[", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"Floor", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{"Min", "/@", 
+                RowBox[{"Transpose", "[", "path", "]"}]}], ")"}], "-", 
+              "padX"}], ",", "100"}], "]"}], ",", 
+           RowBox[{"Ceiling", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{"Max", "/@", 
+                RowBox[{"Transpose", "[", "path", "]"}]}], ")"}], "+", 
+              "padY"}], ",", "100"}], "]"}]}], "}"}], "]"}]}], ";", "\n", 
+       "\t", 
+       RowBox[{"pathPlot", " ", "=", " ", 
+        RowBox[{"Rasterize", "[", 
+         RowBox[{
+          RowBox[{"ListPlot", "[", 
+           RowBox[{"path", ",", 
+            RowBox[{"PlotRange", "\[Rule]", "plotRange"}], ",", 
+            RowBox[{"AspectRatio", "\[Rule]", "Automatic"}]}], "]"}], ",", 
+          RowBox[{"ImageResolution", "\[Rule]", "144"}]}], "]"}]}], ";", "\n",
+        "\t", "\n", "\t", 
+       RowBox[{"mosaicDims", " ", "=", " ", 
+        RowBox[{"Abs", "/@", 
+         RowBox[{"Subtract", "@@@", "plotRange"}]}]}], ";", "\n", "\t", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"w", ",", "h"}], "}"}], " ", "=", " ", "mosaicDims"}], ";", 
+       "\n", "\t", 
+       RowBox[{"mosaic", " ", "=", " ", 
+        RowBox[{"ConstantArray", "[", 
+         RowBox[{"0", ",", 
+          RowBox[{"Reverse", "@", "mosaicDims"}]}], "]"}]}], ";", "\n", "\t", 
+       
+       RowBox[{"mosaicPathCoords", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"-", "padY"}], ",", "padX"}], "}"}], ")"}], "+", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"-", "1"}], ",", "1"}], "}"}], "+", "#"}], "&"}], ")"}],
+          "/@", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"h", "-", "#1"}], ",", "#2"}], "}"}], "&"}], ")"}], "@@@",
+           " ", 
+          RowBox[{"Reverse", "/@", " ", "path"}]}]}]}], ";", "\n", "\t", 
+       RowBox[{"imgType", " ", "=", " ", 
+        RowBox[{"ImageType", "[", 
+         RowBox[{"First", "@", "images"}], "]"}]}], ";", "\n", "\t", 
+       RowBox[{"framesData", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"ImageData", "[", 
+            RowBox[{"#", ",", "imgType"}], "]"}], "&"}], ")"}], "/@", 
+         "images"}]}], ";", "\n", "\t", 
+       RowBox[{"frameNewSubtract", "=", 
+        RowBox[{"ImageData", "[", 
+         RowBox[{
+          RowBox[{"ColorNegate", "[", "roiMaskInner", "]"}], ",", "imgType"}],
+          "]"}]}], ";", "\n", "\t", 
+       RowBox[{"frameOldSubtract", "=", 
+        RowBox[{"ImageData", "[", 
+         RowBox[{"roiMaskInner", ",", "imgType"}], "]"}]}], ";", "\n", "\t", 
+       "\n", "\t", 
+       RowBox[{"Do", "[", 
+        RowBox[{
+         RowBox[{"UpdateMosaicInPlaceMask", "[", 
+          RowBox[{"mosaic", ",", 
+           RowBox[{"mosaicPathCoords", "[", 
+            RowBox[{"[", "n", "]"}], "]"}], ",", 
+           RowBox[{"framesData", "[", 
+            RowBox[{"[", "n", "]"}], "]"}], ",", "frameNewSubtract", ",", 
+           "frameOldSubtract"}], "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"n", ",", "1", ",", 
+           RowBox[{"Length", "[", "framesData", "]"}]}], "}"}]}], "]"}], ";", 
+       "\n", "\t", 
+       RowBox[{"Return", "[", 
+        RowBox[{"{", 
+         RowBox[{"pathPlot", ",", 
+          RowBox[{"Image", "[", 
+           RowBox[{"mosaic", ",", "imgType"}], "]"}]}], "}"}], "]"}], ";"}]}],
+      "\n", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"VMMLocal", "[", 
+    RowBox[{"inputDir_", ",", " ", "imgList_", ",", " ", 
+     RowBox[{"downsample_", ":", "1"}], ",", " ", 
+     RowBox[{"features_", ":", "\"\<SURF\>\""}], ",", " ", 
+     RowBox[{"exportIntermediates_", ":", "True"}], ",", " ", 
+     RowBox[{"performInpaint_", ":", "True"}], ",", " ", 
+     RowBox[{"performBrightnessEqualization_", ":", "True"}], ",", " ", 
+     RowBox[{"qcRegistrations_", ":", "True"}]}], "]"}], "  ", ":=", " ", 
+   RowBox[{"Module", "[", "\n", "\t", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "imgListCopy", ",", " ", "imgListProcessed", ",", " ", "processedDir", 
+       ",", " ", "kernels", ",", "outputDir", ",", "images", ",", "meanImage",
+        ",", "masks", ",", "binaryMask", ",", "roiMask", ",", "roiMaskInner", 
+       ",", "deadPixelMask", ",", "maskFiles", ",", "\n", "\t", "shiftAssocs",
+        ",", "pathPlot", ",", "mosaic", ",", "mosaicFile", ",", "exportPath", 
+       ",", "t0", ",", "t1", ",", "t2", ",", "t3", ",", "t4", ",", "t5", ",", 
+       "t6", ",", "t7", ",", "t8", ",", "timeTotal"}], "}"}], ",", "\n", "\t",
+      "\n", "\t", 
+     RowBox[{
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"downsample", "\[NotEqual]", "1"}], ",", 
+        RowBox[{"WriteLineToStdOut", "[", 
+         RowBox[{
+         "\"\<Downsampling input frames by factor of \>\"", " ", "<>", " ", 
+          RowBox[{"ToString", "[", "downsample", "]"}]}], "]"}]}], "]"}], ";",
+       "\n", "\t", 
+      RowBox[{"imgListCopy", " ", "=", " ", 
+       RowBox[{"Downsample", "[", 
+        RowBox[{"imgList", ",", "downsample"}], "]"}]}], ";", "\n", "\t", 
+      RowBox[{"outputDir", " ", "=", " ", 
+       RowBox[{"inputDir", "<>", "\"\<_vmm_mosaic\>\""}]}], ";", "\n", "\t", 
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"Not", "[", 
+         RowBox[{"DirectoryQ", "[", "outputDir", "]"}], "]"}], ",", 
+        RowBox[{"CreateDirectory", "[", "outputDir", "]"}]}], "]"}], ";", 
+      "\n", "\t", 
+      RowBox[{"If", "[", 
+       RowBox[{"exportIntermediates", ",", " ", 
+        RowBox[{"WriteLineToStdOut", "[", 
+         RowBox[{
+         "\"\<Exporting intermediate files to: \>\"", " ", "<>", " ", 
+          "outputDir"}], "]"}]}], "]"}], ";", "\n", "\t", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{
+       "\"\<stdout\>\"", ",", " ", 
+        "\"\<VMM [0/8] - Launching kernels... \>\""}], "]"}], ";", "\n", "\t", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"t0", ",", "kernels"}], "}"}], " ", "=", " ", 
+       RowBox[{
+        RowBox[{"LaunchKernels", "[", "]"}], " ", "//", " ", 
+        "AbsoluteTiming"}]}], ";", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{"\"\<stdout\>\"", ",", " ", 
+        RowBox[{"\"\<\\t\\t(\>\"", "<>", 
+         RowBox[{"FormatTimeString", "[", "t0", "]"}], "<>", 
+         "\"\< seconds)\\n\>\""}]}], "]"}], ";", "\n", "\t", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{
+       "\"\<stdout\>\"", ",", " ", 
+        "\"\<VMM [1/8] - Importing images... \>\""}], "]"}], ";", "\n", "\t", 
+      
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"t1", ",", " ", "images"}], "}"}], " ", "=", " ", 
+       RowBox[{
+        RowBox[{"ParallelMap", "[", 
+         RowBox[{"Import", ",", "imgListCopy"}], "]"}], " ", "//", " ", 
+        "AbsoluteTiming"}]}], ";", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{"\"\<stdout\>\"", ",", " ", 
+        RowBox[{"\"\<\\t\\t(\>\"", "<>", 
+         RowBox[{"FormatTimeString", "[", "t1", "]"}], "<>", 
+         "\"\< seconds)\\n\>\""}]}], "]"}], ";", "\n", "\t", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{
+       "\"\<stdout\>\"", ",", " ", 
+        "\"\<VMM [2/8] - Computing mean image... \>\""}], "]"}], ";", "\n", 
+      "\t", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"t2", ",", "meanImage"}], "}"}], " ", "=", " ", 
+       RowBox[{
+        RowBox[{"MeanImage", "[", "images", "]"}], " ", "//", " ", 
+        "AbsoluteTiming"}]}], ";", "\n", "\t", 
+      RowBox[{"ExportFile", "[", 
+       RowBox[{
+       "\"\<mean_image.png\>\"", ",", "meanImage", ",", "outputDir", ",", 
+        "exportIntermediates"}], "]"}], ";", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{"\"\<stdout\>\"", ",", " ", 
+        RowBox[{"\"\<\\t\\t(\>\"", "<>", 
+         RowBox[{"FormatTimeString", "[", "t2", "]"}], "<>", 
+         "\"\< seconds)\\n\>\""}]}], "]"}], ";", "\n", "\t", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{
+       "\"\<stdout\>\"", ",", " ", 
+        "\"\<VMM [3/8] - Creating ROI mask... \>\""}], "]"}], ";", "\n", "\t", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"t3", ",", "masks"}], "}"}], " ", "=", " ", 
+       RowBox[{
+        RowBox[{"MeanImageROIMask", "[", "meanImage", "]"}], " ", "//", " ", 
+        "AbsoluteTiming"}]}], ";", "\n", "\t", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+        "binaryMask", ",", "roiMask", ",", "roiMaskInner", ",", 
+         "deadPixelMask"}], "}"}], " ", "=", " ", "masks"}], ";", "\n", "\t", 
+      
+      RowBox[{"maskFiles", " ", "=", " ", 
+       RowBox[{"{", 
+        RowBox[{
+        "\"\<binary_mask.png\>\"", ",", "\"\<roi_mask.png\>\"", ",", 
+         "\"\<roi_inner_mask.png\>\"", ",", "\"\<dead_pixel_mask.png\>\""}], 
+        "}"}]}], ";", "\n", "\t", 
+      RowBox[{"ExportFiles", "[", 
+       RowBox[{
+       "maskFiles", ",", "masks", ",", "outputDir", ",", 
+        "exportIntermediates"}], "]"}], ";", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{"\"\<stdout\>\"", ",", " ", 
+        RowBox[{"\"\<\\t\\t(\>\"", "<>", 
+         RowBox[{"FormatTimeString", "[", "t3", "]"}], "<>", 
+         "\"\< seconds)\\n\>\""}]}], "]"}], ";", "\n", "\t", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{
+       "\"\<stdout\>\"", ",", " ", 
+        "\"\<VMM [4/8] - Interpolate static pixels... \>\""}], "]"}], ";", 
+      "\n", "\t", 
+      RowBox[{"If", "[", 
+       RowBox[{"performInpaint", ",", "\n", "\t", 
+        RowBox[{
+         RowBox[{"SetSharedVariable", "[", "deadPixelMask", "]"}], ";", "\n", 
+         "\t", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"t4", ",", "images"}], "}"}], " ", "=", " ", 
+          RowBox[{
+           RowBox[{"ParallelMap", "[", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"Inpaint", "[", 
+                RowBox[{"#", ",", "deadPixelMask"}], "]"}], "&"}], ")"}], ",",
+              "images"}], "]"}], " ", "//", " ", "AbsoluteTiming"}]}], ";", 
+         "\n", "\t", 
+         RowBox[{"meanImage", " ", "=", " ", 
+          RowBox[{"Inpaint", "[", 
+           RowBox[{"meanImage", ",", "deadPixelMask"}], "]"}]}], ";", "\n", 
+         "\t", 
+         RowBox[{"ExportFile", "[", 
+          RowBox[{
+          "\"\<mean_image_2.png\>\"", ",", "meanImage", ",", "outputDir", ",",
+            "exportIntermediates"}], "]"}], ";", "\n", "\t", 
+         RowBox[{"WriteString", "[", 
+          RowBox[{"\"\<stdout\>\"", ",", " ", 
+           RowBox[{"\"\<\\t(\>\"", "<>", 
+            RowBox[{"FormatTimeString", "[", "t4", "]"}], "<>", 
+            "\"\< seconds)\\n\>\""}]}], "]"}], ";"}], ",", "\n", "\t", 
+        RowBox[{
+         RowBox[{"t4", "=", "0"}], ";", 
+         RowBox[{"WriteString", "[", 
+          RowBox[{"\"\<stdout\>\"", ",", " ", "\"\<\\t SKIPPED \\n\>\""}], 
+          "]"}], ";"}]}], "\n", "\t", "]"}], ";", "\n", "\t", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{
+       "\"\<stdout\>\"", ",", " ", 
+        "\"\<VMM [5/8] - Brightness equalization... \>\""}], "]"}], ";", "\n",
+       "\t", 
+      RowBox[{"If", "[", 
+       RowBox[{"performBrightnessEqualization", ",", "\n", "\t", 
+        RowBox[{
+         RowBox[{"SetSharedVariable", "[", 
+          RowBox[{"meanImage", ",", "roiMask"}], "]"}], ";", "\n", "\t", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"t5", ",", "images"}], "}"}], " ", "=", " ", 
+          RowBox[{
+           RowBox[{"ParallelMap", "[", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"VMMBrightnessEqualize", "[", 
+                RowBox[{"#", ",", "roiMask", ",", "meanImage"}], "]"}], "&"}],
+               ")"}], ",", "images"}], "]"}], " ", "//", " ", 
+           "AbsoluteTiming"}]}], ";", "\n", "\t", 
+         RowBox[{"processedDir", " ", "=", " ", 
+          RowBox[{"FileNameJoin", "[", 
+           RowBox[{"{", 
+            RowBox[{"outputDir", ",", 
+             RowBox[{"inputDir", "<>", "\"\<_processed\>\""}]}], "}"}], 
+           "]"}]}], ";", "\n", "\t", 
+         RowBox[{"imgListProcessed", " ", "=", " ", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"FileNameJoin", "[", 
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"inputDir", "<>", "\"\<_processed\>\""}], ",", "#"}], 
+               "}"}], "]"}], "&"}], ")"}], "/@", 
+           RowBox[{"FileNameTake", "/@", "imgListCopy"}]}]}], ";", "\n", "\t", 
+         RowBox[{"If", "[", 
+          RowBox[{"exportIntermediates", ",", " ", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{"Not", "[", 
+              RowBox[{"DirectoryQ", "[", "processedDir", "]"}], "]"}], ",", 
+             RowBox[{"CreateDirectory", "[", "processedDir", "]"}]}], "]"}]}],
+           "]"}], ";", "\n", "\t", 
+         RowBox[{"ExportFiles", "[", 
+          RowBox[{
+          "imgListProcessed", ",", "images", ",", "outputDir", ",", 
+           "exportIntermediates"}], "]"}], ";", "\n", "\t", 
+         RowBox[{"WriteString", "[", 
+          RowBox[{"\"\<stdout\>\"", ",", " ", 
+           RowBox[{"\"\<\\t\\t(\>\"", "<>", 
+            RowBox[{"FormatTimeString", "[", "t5", "]"}], "<>", 
+            "\"\< seconds)\\n\>\""}]}], "]"}], ";"}], ",", "\n", "\t", 
+        RowBox[{
+         RowBox[{"t5", "=", "0"}], ";", 
+         RowBox[{"WriteString", "[", 
+          RowBox[{"\"\<stdout\>\"", ",", " ", "\"\<\\t SKIPPED \\n\>\""}], 
+          "]"}], ";"}]}], "\n", "\t", "]"}], ";", "\n", "\t", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{
+       "\"\<stdout\>\"", ",", " ", 
+        "\"\<VMM [6/8] - Frame registration... \>\""}], "]"}], ";", "\n", 
+      "\t", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"t6", ",", "shiftAssocs"}], "}"}], " ", "=", " ", 
+       RowBox[{
+        RowBox[{"RegisterShifts", "[", 
+         RowBox[{
+         "images", ",", "roiMask", ",", "roiMaskInner", ",", "features"}], 
+         "]"}], " ", "//", " ", "AbsoluteTiming"}]}], ";", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{"\"\<stdout\>\"", ",", " ", 
+        RowBox[{"\"\<\\t\\t(\>\"", "<>", 
+         RowBox[{"FormatTimeString", "[", "t6", "]"}], "<>", 
+         "\"\< seconds)\\n\>\""}]}], "]"}], ";", "\n", "\t", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{
+       "\"\<stdout\>\"", ",", " ", 
+        "\"\<VMM [7/8] - QC registrations... \>\""}], "]"}], ";", "\n", "\t", 
+      
+      RowBox[{"If", "[", 
+       RowBox[{"qcRegistrations", ",", "\n", "\t", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"t7", ",", "shiftAssocs"}], "}"}], " ", "=", " ", 
+          RowBox[{
+           RowBox[{"QCShifts", "[", 
+            RowBox[{"images", ",", "roiMaskInner", ",", "shiftAssocs"}], 
+            "]"}], " ", "//", " ", "AbsoluteTiming"}]}], ";", "\n", "\t", 
+         RowBox[{"WriteString", "[", 
+          RowBox[{"\"\<stdout\>\"", ",", " ", 
+           RowBox[{"\"\<\\t\\t(\>\"", "<>", 
+            RowBox[{"FormatTimeString", "[", "t7", "]"}], "<>", 
+            "\"\< seconds)\\n\>\""}]}], "]"}], ";"}], ",", "\n", "\t", 
+        RowBox[{
+         RowBox[{"t7", "=", "0"}], ";", 
+         RowBox[{"WriteString", "[", 
+          RowBox[{"\"\<stdout\>\"", ",", " ", "\"\<\\t SKIPPED \\n\>\""}], 
+          "]"}], ";"}]}], "\n", "\t", "]"}], ";", "\n", "\t", "\n", "\t", 
+      RowBox[{"ExportFile", "[", 
+       RowBox[{"\"\<vmm_shifts.csv\>\"", ",", 
+        RowBox[{"Dataset", "@", "shiftAssocs"}], ",", "outputDir", ",", 
+        "exportIntermediates"}], "]"}], ";", "\n", "\t", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{
+       "\"\<stdout\>\"", ",", " ", 
+        "\"\<VMM [8/8] - Building mosaic... \>\""}], "]"}], ";", "\n", "\t", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"t8", ",", 
+         RowBox[{"{", 
+          RowBox[{"pathPlot", ",", "mosaic"}], "}"}]}], "}"}], " ", "=", " ", 
+       
+       RowBox[{
+        RowBox[{"BuildMosaic", "[", 
+         RowBox[{
+         "images", ",", "shiftAssocs", ",", "roiMaskInner", ",", 
+          "qcRegistrations"}], "]"}], " ", "//", " ", "AbsoluteTiming"}]}], 
+      ";", "\n", "\t", 
+      RowBox[{"mosaicFile", " ", "=", " ", 
+       RowBox[{"inputDir", "<>", "\"\<.png\>\""}]}], ";", "\n", "\t", 
+      RowBox[{"ExportFile", "[", 
+       RowBox[{
+       "\"\<path_plot.png\>\"", ",", "pathPlot", ",", "outputDir", ",", 
+        "exportIntermediates"}], "]"}], ";", "\n", "\t", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"t8", ",", "exportPath"}], "}"}], " ", "=", " ", 
+       RowBox[{
+        RowBox[{"Export", "[", 
+         RowBox[{"mosaicFile", ",", " ", "mosaic"}], "]"}], " ", "//", " ", 
+        "AbsoluteTiming"}]}], ";", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{"\"\<stdout\>\"", ",", " ", 
+        RowBox[{"\"\<\\t\\t\\t(\>\"", "<>", 
+         RowBox[{"FormatTimeString", "[", "t8", "]"}], "<>", 
+         "\"\< seconds)\\n\>\""}]}], "]"}], ";", "\n", "\t", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{"\"\<stdout\>\"", ",", " ", 
+        RowBox[{
+        "\"\<\\nGenerated mosaic saved to \>\"", "<>", "mosaicFile", "<>", 
+         "\"\<!\\n\>\""}]}], "]"}], ";", "\n", "\t", 
+      RowBox[{"timeTotal", " ", "=", " ", 
+       RowBox[{"Total", "[", 
+        RowBox[{"{", 
+         RowBox[{
+         "t0", ",", "t1", ",", "t2", ",", "t3", ",", "t4", ",", "t5", ",", 
+          "t6", ",", "t7", ",", "t8"}], "}"}], "]"}]}], ";", "\n", "\t", 
+      RowBox[{"WriteString", "[", 
+       RowBox[{"\"\<stdout\>\"", ",", " ", 
+        RowBox[{"\"\<Total time: \>\"", "<>", 
+         RowBox[{"FormatTimeString", "[", "timeTotal", "]"}], "<>", 
+         "\"\<\\n\>\""}]}], "]"}], ";"}]}], "\n", "]"}]}], ";"}]}], "Code",
+ CellChangeTimes->{
+  3.8215661671854973`*^9, {3.821567500651741*^9, 3.821567511584256*^9}, {
+   3.821567555073537*^9, 3.821567635539253*^9}, {3.821569988462335*^9, 
+   3.821569996545533*^9}, {3.821571045391261*^9, 3.82157105347486*^9}, {
+   3.821571086379722*^9, 3.8215711388459263`*^9}, {3.821571203015461*^9, 
+   3.821571299084182*^9}, {3.821571351001396*^9, 3.821571375926916*^9}, {
+   3.821571479268281*^9, 3.821571512423273*^9}, {3.821572511956571*^9, 
+   3.821572526756743*^9}, 3.821573155467634*^9, {3.821573943345417*^9, 
+   3.821573955269595*^9}, {3.821574871699839*^9, 3.821574872472711*^9}, {
+   3.821575317730248*^9, 3.821575317911249*^9}, {3.82157558966446*^9, 
+   3.821575596167774*^9}, {3.8215764565969973`*^9, 3.821576474766075*^9}, {
+   3.821576512115041*^9, 3.821576631756764*^9}, {3.821576690382217*^9, 
+   3.821576727893309*^9}, {3.821576796344572*^9, 3.821576829526223*^9}, {
+   3.821577665777834*^9, 3.821577780148617*^9}, {3.821578968841194*^9, 
+   3.821578969286644*^9}, {3.821579039375511*^9, 3.8215791185161*^9}, {
+   3.821579155466578*^9, 3.821579221672789*^9}, {3.82157929594374*^9, 
+   3.82157943626832*^9}, {3.8215794679553127`*^9, 3.821579567580968*^9}, {
+   3.821579603306123*^9, 3.82157961341171*^9}, {3.821579663064569*^9, 
+   3.821579663944862*^9}, {3.8215797046267977`*^9, 3.821579758069953*^9}, 
+   3.8215797973221283`*^9, {3.821579883360345*^9, 3.821579889136361*^9}, 
+   3.8215799551352243`*^9, 3.8215803050087976`*^9, {3.821580629745893*^9, 
+   3.821580669756914*^9}, {3.821580874291394*^9, 3.82158087778098*^9}, {
+   3.821580920192432*^9, 3.821580958181128*^9}, {3.821581000364148*^9, 
+   3.821581034018405*^9}, {3.8215811621004047`*^9, 3.82158116563311*^9}, {
+   3.821581353691441*^9, 3.821581480044529*^9}, {3.821581519915313*^9, 
+   3.821581559292815*^9}, {3.821581701406698*^9, 3.821581702669362*^9}, {
+   3.821581834404788*^9, 3.821581851546069*^9}, {3.821581967220085*^9, 
+   3.821582009540512*^9}, {3.82158213451616*^9, 3.8215821461355257`*^9}, {
+   3.8215821870065603`*^9, 3.8215821874179296`*^9}, {3.821582290752165*^9, 
+   3.821582291169963*^9}, 3.821582420519927*^9, {3.821583017825432*^9, 
+   3.821583029005583*^9}, {3.821583062071755*^9, 3.821583080183135*^9}, {
+   3.821583195473172*^9, 3.8215831994596567`*^9}, {3.8215832602738237`*^9, 
+   3.821583305815742*^9}, {3.821583367013957*^9, 3.821583395018742*^9}, {
+   3.8215834364619083`*^9, 3.821583460174797*^9}, {3.821583499038166*^9, 
+   3.8215838990013437`*^9}, 3.8215840805051117`*^9, {3.8215841613242188`*^9, 
+   3.8215841673042307`*^9}, {3.8215895730834503`*^9, 3.821589584157467*^9}, {
+   3.8217790122819314`*^9, 3.8217790128194075`*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"b9a81395-018d-43a6-a2bf-7865d5803458"],
+
+Cell[CellGroupData[{
+
+Cell["Setup inputs manually", "Section",
+ CellChangeTimes->{{3.8217789117040596`*^9, 
+  3.8217789148248177`*^9}},ExpressionUUID->"10ea175b-ae3c-4736-940a-\
+e4707e5d1a92"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"SetDirectory", "[", 
+  RowBox[{"NotebookDirectory", "[", "]"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dir", " ", "=", " ", "\"\<6_oral_mucosa_rt\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"imgFiles", " ", "=", " ", 
+   RowBox[{"FileNames", "[", 
+    RowBox[{
+     RowBox[{"\"\<*.png\>\"", "|", "\"\<*.jpg\>\""}], ",", 
+     RowBox[{"{", "dir", "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Length", "@", "imgFiles"}]}], "Input",
+ CellChangeTimes->{{3.821565264522345*^9, 3.821565303265525*^9}, {
+   3.8215661758583937`*^9, 3.8215661760808563`*^9}, 3.821586124142593*^9, {
+   3.821588794611501*^9, 3.8215887997073793`*^9}},
+ CellLabel->"In[28]:=",ExpressionUUID->"a5473fc9-e003-4feb-b099-062b94036ff6"],
+
+Cell[BoxData["\<\"C:\\\\Users\\\\bhunt\\\\OneDrive - Dartmouth \
+College\\\\Desktop\\\\vmm_v0.2\"\>"], "Output",
+ CellChangeTimes->{3.8215895931495047`*^9, 3.8217737542134066`*^9, 
+  3.8217788951816235`*^9, 3.8217790258581715`*^9, 3.8217791782579284`*^9},
+ CellLabel->"Out[28]=",ExpressionUUID->"fd8b5a90-9f70-4e3a-9373-f0d65c41a337"],
+
+Cell[BoxData["1668"], "Output",
+ CellChangeTimes->{3.8215895931495047`*^9, 3.8217737542134066`*^9, 
+  3.8217788951816235`*^9, 3.8217790258581715`*^9, 3.821779178322755*^9},
+ CellLabel->"Out[31]=",ExpressionUUID->"c37be41e-2204-4b6b-b88f-9fbe55269f3e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Test Execution Speed", "Subsubsection",
+ CellChangeTimes->{{3.821566183885479*^9, 
+  3.821566197794705*^9}},ExpressionUUID->"4b45041b-9fcd-4108-9710-\
+e3f9358a1d0f"],
+
+Cell["\<\
+VMM[inputDir, imgFileList, exludeIntermediates, downsampleFactor, \
+featureDetector, inpaint, brigthnessEqualization, applyQC]
+
+inputDir (String) = directory where HRME frames are located, expected format \
+of files located in this folder is 240 x 180 resolution 8-bit grayscale \
+image.
+imgFileList (List) = list of image files found in the input directory
+exportIntermediatese (Bool) = a flag to indicate whether or not intermediate \
+processing files should be exported including mean image, ROI masks and \
+inpainting masks.
+downsampleFactor (Integer) = factor, n, used to sample every nth frame of the \
+image file list. This can help speed up the total mosaic processing time, but \
+may reduce overall quality. Possible factors to use could be (1,2,3,5,10), \
+which correspond to 90, 45, 30, 18, and 9 fps.
+
+featureDetector (String) = identifier for which feature detector to use for \
+frame registration. Possible options are \[OpenCurlyDoubleQuote]SURF\
+\[CloseCurlyDoubleQuote], \
+\[OpenCurlyDoubleQuote]AKAZE\[CloseCurlyDoubleQuote], \
+\[OpenCurlyDoubleQuote]KAZE\[CloseCurlyDoubleQuote], and \
+\[OpenCurlyDoubleQuote]ORB\[CloseCurlyDoubleQuote]. Recommended is \
+\[OpenCurlyDoubleQuote]SURF\[CloseCurlyDoubleQuote] as it is the fastest.
+inpaint (Bool) = \
+\>", "Text",
+ CellChangeTimes->{{3.8215783437822847`*^9, 3.821578573081592*^9}, {
+  3.8215786731933002`*^9, 
+  3.821579006371031*^9}},ExpressionUUID->"d97fb93b-e301-4d92-8710-\
+728a64ead398"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"VMMLocal", "[", 
+  RowBox[{
+  "dir", ",", "imgFiles", ",", "1", ",", "\"\<SURF\>\"", ",", "True", ",", 
+   "True", ",", "True", ",", "True"}], "]"}]], "Input",
+ CellChangeTimes->{{3.8215653242279177`*^9, 3.8215653287498426`*^9}, {
+   3.821565418645893*^9, 3.82156542140408*^9}, {3.821571274814918*^9, 
+   3.821571274950808*^9}, {3.821571516682107*^9, 3.821571519945571*^9}, {
+   3.8215717525353527`*^9, 3.8215717543967524`*^9}, {3.821573961685199*^9, 
+   3.821573962412675*^9}, 3.821574104519515*^9, {3.8215741705162973`*^9, 
+   3.821574175167698*^9}, {3.8215742159130363`*^9, 3.82157421610168*^9}, 
+   3.821574253497208*^9, 3.821574293690649*^9, 3.821574365500772*^9, 
+   3.821575799358754*^9, 3.821575950079576*^9, 3.8215760842037983`*^9, {
+   3.8215762239564953`*^9, 3.821576229629303*^9}, {3.821576279573599*^9, 
+   3.821576279829505*^9}, {3.82157643161392*^9, 3.821576445421682*^9}, {
+   3.8215766470831537`*^9, 3.821576648075169*^9}, 3.8215768840398827`*^9, 
+   3.821576928544689*^9, 3.821577011759956*^9, 3.8215771075443573`*^9, {
+   3.821577245865349*^9, 3.821577248705551*^9}, {3.821577650176255*^9, 
+   3.82157765508597*^9}, {3.82157778619059*^9, 3.821577792213468*^9}, {
+   3.821577953509634*^9, 3.82157795609823*^9}, {3.8215792378115253`*^9, 
+   3.821579244515266*^9}, {3.8215798950003157`*^9, 3.821579895337784*^9}, 
+   3.82158073268563*^9, {3.821582151822769*^9, 3.8215821521102247`*^9}, 
+   3.821582193518916*^9, 3.821582297952592*^9, {3.821582666858243*^9, 
+   3.821582670787655*^9}, {3.821584087647519*^9, 3.821584088040604*^9}, {
+   3.821584134283568*^9, 3.821584148213826*^9}, {3.8215842995461893`*^9, 
+   3.8215843041064253`*^9}, {3.821584397589137*^9, 3.821584399975918*^9}, {
+   3.821584600005809*^9, 3.8215846010022507`*^9}, 3.821584674027979*^9, {
+   3.821779019372056*^9, 3.821779019937519*^9}},
+ CellLabel->"In[53]:=",ExpressionUUID->"2c175ffa-c8f0-4d38-8fdf-25b618d7821d"],
+
+Cell["\<\
+Exporting intermediate files to: 6_oral_mucosa_rt_vmm_mosaic
+VMM [0/8] - Launching kernels... \t\t(3.633 seconds)
+VMM [1/8] - Importing images... \
+\>", "Print",
+ CellChangeTimes->{3.8215895992813826`*^9, 3.8217790285827017`*^9},
+ CellLabel->
+  "During evaluation of \
+In[53]:=",ExpressionUUID->"22b58666-9bf6-44a6-978e-e71a1dd6fce9"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Run in notebook and store all intermediate variables", "Subsection",
+ CellChangeTimes->{{3.821580222181189*^9, 
+  3.821580235985955*^9}},ExpressionUUID->"e9da37be-8951-4a33-93d6-\
+4d19807528b2"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\n", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"inputDir", " ", "=", " ", "dir"}], ";"}], "\[IndentingNewLine]", 
+   
+   RowBox[{
+    RowBox[{"imgList", " ", "=", " ", "imgFiles"}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"downsample", "=", "1"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"features", "=", "\"\<SURF\>\""}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"exportIntermediates", "=", "True"}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"performInpaint", "=", "True"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"performBrightnessEqualization", "=", "True"}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"excludeQCFrames", "=", "True"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", "\t", 
+   RowBox[{
+    RowBox[{"If", "[", 
+     RowBox[{
+      RowBox[{"downsample", "\[NotEqual]", "1"}], ",", 
+      RowBox[{"WriteLineToStdOut", "[", 
+       RowBox[{
+       "\"\<Downsampling input frames by factor of \>\"", " ", "<>", " ", 
+        RowBox[{"ToString", "[", "downsample", "]"}]}], "]"}]}], "]"}], ";"}],
+    "\n", "\t", 
+   RowBox[{
+    RowBox[{"imgListCopy", " ", "=", " ", 
+     RowBox[{"Downsample", "[", 
+      RowBox[{"imgList", ",", "downsample"}], "]"}]}], ";"}], "\n", "\t", 
+   RowBox[{
+    RowBox[{"outputDir", " ", "=", " ", 
+     RowBox[{"inputDir", "<>", "\"\<_vmm_mosaic\>\""}]}], ";"}], "\n", "\t", 
+   RowBox[{
+    RowBox[{"If", "[", 
+     RowBox[{
+      RowBox[{"Not", "[", 
+       RowBox[{"DirectoryQ", "[", "outputDir", "]"}], "]"}], ",", 
+      RowBox[{"CreateDirectory", "[", "outputDir", "]"}]}], "]"}], ";"}], 
+   "\n", "\t", 
+   RowBox[{
+    RowBox[{"If", "[", 
+     RowBox[{"exportIntermediates", ",", " ", 
+      RowBox[{"WriteLineToStdOut", "[", 
+       RowBox[{
+       "\"\<Exporting intermediate files to: \>\"", " ", "<>", " ", 
+        "outputDir"}], "]"}]}], "]"}], ";"}], "\n", "\t", "\n", "\t", 
+   RowBox[{
+    RowBox[{"WriteString", "[", 
+     RowBox[{
+     "\"\<stdout\>\"", ",", " ", 
+      "\"\<VMM [0/8] - Launching kernels... \>\""}], "]"}], ";"}], "\n", "\t", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"t0", ",", "kernels"}], "}"}], " ", "=", " ", 
+     RowBox[{
+      RowBox[{"LaunchKernels", "[", "]"}], " ", "//", " ", 
+      "AbsoluteTiming"}]}], ";"}], "\n", "\t", 
+   RowBox[{
+    RowBox[{"WriteString", "[", 
+     RowBox[{"\"\<stdout\>\"", ",", " ", 
+      RowBox[{"\"\<\\t\\t(\>\"", "<>", 
+       RowBox[{"FormatTimeString", "[", "t0", "]"}], "<>", 
+       "\"\< seconds)\\n\>\""}]}], "]"}], ";"}], "\n", "\t", "\n", "\t", 
+   RowBox[{
+    RowBox[{"WriteString", "[", 
+     RowBox[{
+     "\"\<stdout\>\"", ",", " ", "\"\<VMM [1/8] - Importing images... \>\""}],
+      "]"}], ";"}], "\n", "\t", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"t1", ",", " ", "images"}], "}"}], " ", "=", " ", 
+     RowBox[{
+      RowBox[{"ParallelMap", "[", 
+       RowBox[{"Import", ",", "imgListCopy"}], "]"}], " ", "//", " ", 
+      "AbsoluteTiming"}]}], ";"}], "\n", "\t", 
+   RowBox[{
+    RowBox[{"WriteString", "[", 
+     RowBox[{"\"\<stdout\>\"", ",", " ", 
+      RowBox[{"\"\<\\t\\t(\>\"", "<>", 
+       RowBox[{"FormatTimeString", "[", "t1", "]"}], "<>", 
+       "\"\< seconds)\\n\>\""}]}], "]"}], ";"}], "\n", "\t", "\n", "\t", 
+   RowBox[{
+    RowBox[{"WriteString", "[", 
+     RowBox[{
+     "\"\<stdout\>\"", ",", " ", 
+      "\"\<VMM [2/8] - Computing mean image... \>\""}], "]"}], ";"}], "\n", 
+   "\t", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"t2", ",", "meanImage"}], "}"}], " ", "=", " ", 
+     RowBox[{
+      RowBox[{"MeanImage", "[", "images", "]"}], " ", "//", " ", 
+      "AbsoluteTiming"}]}], ";"}], "\n", "\t", 
+   RowBox[{
+    RowBox[{"ExportFile", "[", 
+     RowBox[{
+     "\"\<mean_image.png\>\"", ",", "meanImage", ",", "outputDir", ",", 
+      "exportIntermediates"}], "]"}], ";"}], "\n", "\t", 
+   RowBox[{
+    RowBox[{"WriteString", "[", 
+     RowBox[{"\"\<stdout\>\"", ",", " ", 
+      RowBox[{"\"\<\\t\\t(\>\"", "<>", 
+       RowBox[{"FormatTimeString", "[", "t2", "]"}], "<>", 
+       "\"\< seconds)\\n\>\""}]}], "]"}], ";"}], "\n", "\t", "\n", "\t", 
+   RowBox[{
+    RowBox[{"WriteString", "[", 
+     RowBox[{
+     "\"\<stdout\>\"", ",", " ", 
+      "\"\<VMM [3/8] - Creating ROI mask... \>\""}], "]"}], ";"}], "\n", "\t", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"t3", ",", "masks"}], "}"}], " ", "=", " ", 
+     RowBox[{
+      RowBox[{"MeanImageROIMask", "[", "meanImage", "]"}], " ", "//", " ", 
+      "AbsoluteTiming"}]}], ";"}], "\n", "\t", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "binaryMask", ",", "roiMask", ",", "roiMaskInner", ",", 
+       "deadPixelMask"}], "}"}], " ", "=", " ", "masks"}], ";"}], "\n", "\t", 
+   
+   RowBox[{
+    RowBox[{"maskFiles", " ", "=", " ", 
+     RowBox[{"{", 
+      RowBox[{
+      "\"\<binary_mask.png\>\"", ",", "\"\<roi_mask.png\>\"", ",", 
+       "\"\<roi_inner_mask.png\>\"", ",", "\"\<dead_pixel_mask.png\>\""}], 
+      "}"}]}], ";"}], "\n", "\t", 
+   RowBox[{
+    RowBox[{"ExportFiles", "[", 
+     RowBox[{
+     "maskFiles", ",", "masks", ",", "outputDir", ",", 
+      "exportIntermediates"}], "]"}], ";"}], "\n", "\t", 
+   RowBox[{
+    RowBox[{"WriteString", "[", 
+     RowBox[{"\"\<stdout\>\"", ",", " ", 
+      RowBox[{"\"\<\\t\\t(\>\"", "<>", 
+       RowBox[{"FormatTimeString", "[", "t3", "]"}], "<>", 
+       "\"\< seconds)\\n\>\""}]}], "]"}], ";"}], "\[IndentingNewLine]", "\t", 
+   "\n", 
+   RowBox[{"(*", "\n", "\t", 
+    RowBox[{
+     RowBox[{"WriteString", "[", 
+      RowBox[{
+      "\"\<stdout\>\"", ",", " ", 
+       "\"\<VMM [4/8] - Interpolate static pixels... \>\""}], "]"}], ";", 
+     "\n", "\t", 
+     RowBox[{"If", "[", 
+      RowBox[{"performInpaint", ",", "\n", "\t", 
+       RowBox[{
+        RowBox[{"SetSharedVariable", "[", "deadPixelMask", "]"}], ";", "\n", 
+        "\t", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"t4", ",", "images"}], "}"}], " ", "=", " ", 
+         RowBox[{
+          RowBox[{"ParallelMap", "[", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"Inpaint", "[", 
+               RowBox[{"#", ",", "deadPixelMask"}], "]"}], "&"}], ")"}], ",", 
+            "images"}], "]"}], " ", "//", " ", "AbsoluteTiming"}]}], ";", 
+        "\n", "\t", 
+        RowBox[{"meanImage", " ", "=", " ", 
+         RowBox[{"Inpaint", "[", 
+          RowBox[{"meanImage", ",", "deadPixelMask"}], "]"}]}], ";", "\n", 
+        "\t", 
+        RowBox[{"ExportFile", "[", 
+         RowBox[{
+         "\"\<mean_image_2.png\>\"", ",", "meanImage", ",", "outputDir", ",", 
+          "exportIntermediates"}], "]"}], ";", "\n", "\t", 
+        RowBox[{"WriteString", "[", 
+         RowBox[{"\"\<stdout\>\"", ",", " ", 
+          RowBox[{"\"\<\\t(\>\"", "<>", 
+           RowBox[{"FormatTimeString", "[", "t4", "]"}], "<>", 
+           "\"\< seconds)\\n\>\""}]}], "]"}], ";"}], ",", "\n", "\t", 
+       RowBox[{
+        RowBox[{"t4", "=", "0"}], ";", 
+        RowBox[{"WriteString", "[", 
+         RowBox[{"\"\<stdout\>\"", ",", " ", "\"\<\\t SKIPPED \\n\>\""}], 
+         "]"}], ";"}]}], "\n", "\t", "]"}], ";", "\n", "\t", "\n", "\t", 
+     RowBox[{"WriteString", "[", 
+      RowBox[{
+      "\"\<stdout\>\"", ",", " ", 
+       "\"\<VMM [5/8] - Brightness equalization... \>\""}], "]"}], ";", "\n", 
+     "\t", 
+     RowBox[{"If", "[", 
+      RowBox[{"performBrightnessEqualization", ",", "\n", "\t", 
+       RowBox[{
+        RowBox[{"SetSharedVariable", "[", 
+         RowBox[{"meanImage", ",", "roiMask"}], "]"}], ";", "\n", "\t", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"t5", ",", "images"}], "}"}], " ", "=", " ", 
+         RowBox[{
+          RowBox[{"ParallelMap", "[", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"VMMBrightnessEqualize", "[", 
+               RowBox[{"#", ",", "roiMask", ",", "meanImage"}], "]"}], "&"}], 
+             ")"}], ",", "images"}], "]"}], " ", "//", " ", 
+          "AbsoluteTiming"}]}], ";", "\n", "\t", 
+        RowBox[{"If", "[", 
+         RowBox[{"exportIntermediates", ",", " ", 
+          RowBox[{"If", "[", 
+           RowBox[{
+            RowBox[{"Not", "[", 
+             RowBox[{"DirectoryQ", "[", 
+              RowBox[{"inputDir", "<>", "\"\<_processed\>\""}], "]"}], "]"}], 
+            ",", 
+            RowBox[{"CreateDirectory", "[", 
+             RowBox[{"inputDir", "<>", "\"\<_processed\>\""}], "]"}]}], 
+           "]"}]}], "]"}], ";", "\n", "\t", 
+        RowBox[{"If", "[", 
+         RowBox[{"exportIntermediates", ",", " ", 
+          RowBox[{"ParallelMap", "[", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"Export", "[", 
+               RowBox[{
+                RowBox[{"#", "[", 
+                 RowBox[{"[", "1", "]"}], "]"}], ",", 
+                RowBox[{"#", "[", 
+                 RowBox[{"[", "2", "]"}], "]"}], ",", 
+                RowBox[{"OverwriteTarget", "->", "True"}]}], "]"}], "&"}], 
+             ")"}], ",", 
+            RowBox[{"Transpose", "[", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"StringReplace", "[", 
+                RowBox[{"imgListCopy", ",", 
+                 RowBox[{"{", 
+                  RowBox[{"inputDir", "\[Rule]", 
+                   RowBox[{"(", 
+                    RowBox[{"inputDir", "<>", "\"\<_processed\>\""}], ")"}]}],
+                   "}"}]}], "]"}], ",", "images"}], "}"}], "]"}]}], "]"}]}], 
+         "]"}], ";", "\n", "\t", 
+        RowBox[{"WriteString", "[", 
+         RowBox[{"\"\<stdout\>\"", ",", " ", 
+          RowBox[{"\"\<\\t\\t(\>\"", "<>", 
+           RowBox[{"FormatTimeString", "[", "t5", "]"}], "<>", 
+           "\"\< seconds)\\n\>\""}]}], "]"}], ";"}], ",", "\n", "\t", 
+       RowBox[{
+        RowBox[{"t5", "=", "0"}], ";", 
+        RowBox[{"WriteString", "[", 
+         RowBox[{"\"\<stdout\>\"", ",", " ", "\"\<\\t SKIPPED \\n\>\""}], 
+         "]"}], ";"}]}], "\n", "\t", "]"}], ";", "\n", "\t", "\n", "\t", 
+     RowBox[{"WriteString", "[", 
+      RowBox[{
+      "\"\<stdout\>\"", ",", " ", 
+       "\"\<VMM [6/8] - Frame registration... \>\""}], "]"}], ";", "\n", "\t", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"t6", ",", "shiftAssocs"}], "}"}], " ", "=", " ", 
+      RowBox[{
+       RowBox[{"RegisterShifts", "[", 
+        RowBox[{
+        "images", ",", "roiMask", ",", "roiMaskInner", ",", "features"}], 
+        "]"}], " ", "//", " ", "AbsoluteTiming"}]}], ";", "\n", "\t", 
+     RowBox[{"WriteString", "[", 
+      RowBox[{"\"\<stdout\>\"", ",", " ", 
+       RowBox[{"\"\<\\t\\t(\>\"", "<>", 
+        RowBox[{"FormatTimeString", "[", "t6", "]"}], "<>", 
+        "\"\< seconds)\\n\>\""}]}], "]"}], ";", "\n", "\t", "\n", "\t", 
+     RowBox[{"WriteString", "[", 
+      RowBox[{
+      "\"\<stdout\>\"", ",", " ", "\"\<VMM [7/8] - Building mosaic... \>\""}],
+       "]"}], ";", "\n", "\t", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"t7", ",", "mosaic"}], "}"}], " ", "=", " ", 
+      RowBox[{
+       RowBox[{"BuildMosaic", "[", 
+        RowBox[{
+        "images", ",", "shiftAssocs", ",", "roiMaskInner", ",", 
+         "excludeQCFrames"}], "]"}], " ", "//", " ", "AbsoluteTiming"}]}], 
+     ";", "\n", "\t", 
+     RowBox[{"WriteString", "[", 
+      RowBox[{"\"\<stdout\>\"", ",", " ", 
+       RowBox[{"\"\<\\t\\t\\t(\>\"", "<>", 
+        RowBox[{"FormatTimeString", "[", "t7", "]"}], "<>", 
+        "\"\< seconds)\\n\>\""}]}], "]"}], ";", "\n", "\t", "\n", "\t", 
+     RowBox[{"WriteString", "[", 
+      RowBox[{
+      "\"\<stdout\>\"", ",", " ", "\"\<VMM [8/8] - Saving mosaic... \>\""}], 
+      "]"}], ";", "\n", "\t", 
+     RowBox[{"mosaicFile", " ", "=", " ", 
+      RowBox[{"inputDir", "<>", "\"\<.png\>\""}]}], ";", "\n", "\t", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"t8", ",", "exportPath"}], "}"}], " ", "=", " ", 
+      RowBox[{
+       RowBox[{"Export", "[", 
+        RowBox[{"mosaicFile", ",", " ", "mosaic"}], "]"}], " ", "//", " ", 
+       "AbsoluteTiming"}]}], ";", "\n", "\t", 
+     RowBox[{"WriteString", "[", 
+      RowBox[{"\"\<stdout\>\"", ",", " ", 
+       RowBox[{"\"\<\\t\\t\\t(\>\"", "<>", 
+        RowBox[{"FormatTimeString", "[", "t8", "]"}], "<>", 
+        "\"\< seconds)\\n\>\""}]}], "]"}], ";", "\n", "\t", "\n", "\t", 
+     RowBox[{"WriteString", "[", 
+      RowBox[{"\"\<stdout\>\"", ",", " ", 
+       RowBox[{
+       "\"\<\\nGenerated mosaic saved to \>\"", "<>", "mosaicFile", "<>", 
+        "\"\<!\\n\>\""}]}], "]"}], ";", "\n", "\t", 
+     RowBox[{"timeTotal", " ", "=", " ", 
+      RowBox[{"Total", "[", 
+       RowBox[{"{", 
+        RowBox[{
+        "t0", ",", "t1", ",", "t2", ",", "t3", ",", "t4", ",", "t5", ",", 
+         "t6", ",", "t7", ",", "t8"}], "}"}], "]"}]}], ";", "\n", "\t", 
+     RowBox[{"WriteString", "[", 
+      RowBox[{"\"\<stdout\>\"", ",", " ", 
+       RowBox[{"\"\<Total time: \>\"", "<>", 
+        RowBox[{"FormatTimeString", "[", "timeTotal", "]"}], "<>", 
+        "\"\<\\n\>\""}]}], "]"}], ";"}], "*)"}]}]}]], "Input",
+ CellChangeTimes->{{3.821580087207527*^9, 3.821580127808659*^9}, {
+   3.821580161255741*^9, 3.821580208261797*^9}, 3.82158029457626*^9, 
+   3.821580751202159*^9, {3.8215888851578064`*^9, 3.8215889087007484`*^9}},
+ CellLabel->"In[25]:=",ExpressionUUID->"9c84eebc-6015-4199-a4f5-8dc8037ccdc3"],
+
+Cell["\<\
+Exporting intermediate files to: 6_oral_mucosa_rt_vmm_mosaic
+VMM [0/8] - Launching kernels... \t\t(5.783 seconds)
+VMM [1/8] - Importing images... \t\t(11.760 seconds)
+VMM [2/8] - Computing mean image... \t\t(0.444 seconds)
+VMM [3/8] - Creating ROI mask... \t\t(0.405 seconds)\
+\>", "Print",
+ CellChangeTimes->{3.821588910679221*^9},
+ CellLabel->
+  "During evaluation of \
+In[25]:=",ExpressionUUID->"1b0858b3-7baf-4a40-8efc-63a869066058"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Create vmm_config.json", "Section",
+ CellChangeTimes->{{3.82177332214415*^9, 
+  3.8217733281122494`*^9}},ExpressionUUID->"dccca51c-de6d-48ee-a327-\
+b653c2e3f5ef"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"configAssoc", " ", "=", " ", 
+   RowBox[{"<|", 
+    RowBox[{
+     RowBox[{"\"\<downsample_factor\>\"", "\[Rule]", "1"}], ",", 
+     RowBox[{"\"\<feature_dectector\>\"", "\[Rule]", "\"\<SURF\>\""}], ",", 
+     RowBox[{"\"\<export_intermediates\>\"", "\[Rule]", "True"}], ",", 
+     RowBox[{"\"\<perform_inpaint\>\"", "\[Rule]", "True"}], ",", 
+     RowBox[{"\"\<perform_brightness_equalization\>\"", "\[Rule]", "True"}], 
+     ",", 
+     RowBox[{"\"\<qc_registered_shifts\>\"", "\[Rule]", "True"}]}], "|>"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.821773335560532*^9, 3.8217733361284504`*^9}, {
+  3.821773459321872*^9, 3.8217734707359333`*^9}, {3.8217735313293295`*^9, 
+  3.8217736237618923`*^9}},
+ CellLabel->"In[21]:=",ExpressionUUID->"d513b4c1-a710-4fd4-8f72-13b9657a4a4e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Export", "[", 
+  RowBox[{
+  "\"\<vmm_config.json\>\"", ",", "configAssoc", ",", "\"\<RawJSON\>\""}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.8217736308744335`*^9, 3.821773651547777*^9}},
+ CellLabel->"In[23]:=",ExpressionUUID->"0865d5fd-5e9c-4d1d-bbf0-bf4456129527"],
+
+Cell[BoxData["\<\"vmm_config.json\"\>"], "Output",
+ CellChangeTimes->{{3.8217736326592474`*^9, 3.821773652238324*^9}},
+ CellLabel->"Out[23]=",ExpressionUUID->"87e00133-97eb-4cf3-90b1-b50f72775202"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Directory", "[", "]"}]], "Input",
+ CellChangeTimes->{{3.8217736663640103`*^9, 3.821773667871805*^9}},
+ CellLabel->"In[24]:=",ExpressionUUID->"5baffabd-8758-4439-bfb2-087474d757f4"],
+
+Cell[BoxData["\<\"C:\\\\Users\\\\bhunt\\\\OneDrive - Dartmouth \
+College\\\\Documents\"\>"], "Output",
+ CellChangeTimes->{3.8217736680112305`*^9},
+ CellLabel->"Out[24]=",ExpressionUUID->"4d7e6ca9-2cf2-4659-801f-f38af4d080e9"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Keys", "@", "configAssoc"}]], "Input",
+ CellChangeTimes->{{3.821774569005293*^9, 3.8217745699947133`*^9}},
+ CellLabel->"In[36]:=",ExpressionUUID->"eae05195-04cc-4806-b7d8-e559fa42f46d"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\<\"downsample_factor\"\>", ",", "\<\"feature_dectector\"\>", 
+   ",", "\<\"export_intermediates\"\>", ",", "\<\"perform_inpaint\"\>", 
+   ",", "\<\"perform_brightness_equalization\"\>", 
+   ",", "\<\"qc_registered_shifts\"\>"}], "}"}]], "Output",
+ CellChangeTimes->{{3.821774566902875*^9, 3.821774570289345*^9}},
+ CellLabel->"Out[36]=",ExpressionUUID->"d2f4eef5-bd72-488c-9dc8-2ad88365f727"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Import", "[", 
+   RowBox[{"\"\<vmm_config.json\>\"", ",", "\"\<RawJSON\>\""}], "]"}], "[", 
+  RowBox[{"[", "\"\<perform_inpaint\>\"", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.8217737408685436`*^9, 3.821773809952999*^9}, {
+  3.821775211319539*^9, 3.821775229945771*^9}},
+ CellLabel->"In[48]:=",ExpressionUUID->"89aa28e1-865b-4ece-8a93-6366cbd2a552"],
+
+Cell[BoxData["True"], "Output",
+ CellChangeTimes->{{3.821773767178177*^9, 3.82177381130028*^9}, {
+  3.821775207591403*^9, 3.821775230261545*^9}},
+ CellLabel->"Out[48]=",ExpressionUUID->"fb874344-5241-40c7-9476-029c5ccb83cf"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"FilePrint", "[", "\"\<vmm_config.json\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.8217747547782726`*^9, 3.8217747902557983`*^9}, {
+  3.821774831316284*^9, 3.821774855656598*^9}},
+ CellLabel->"In[44]:=",ExpressionUUID->"930a2e8d-ef0a-4670-bf95-93cdd45f0dbf"],
+
+Cell["\<\
+{
+\t\"downsample_factor\":1,
+\t\"feature_dectector\":\"SURF\",
+\t\"export_intermediates\":true,
+\t\"perform_inpaint\":true,
+\t\"perform_brightness_equalization\":true,
+\t\"qc_registered_shifts\":true
+}\
+\>", "Print",
+ CellChangeTimes->{3.8217748559655547`*^9},
+ CellLabel->
+  "During evaluation of \
+In[44]:=",ExpressionUUID->"6fef601e-3081-40fb-ab06-ba8cef1ff20f"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1142.1, 576.9},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+Magnification:>0.75 Inherited,
+FrontEndVersion->"12.1 for Microsoft Windows (64-bit) (June 19, 2020)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"3f88f10d-4dc6-4ae3-828a-4d821e3f38c2"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[400, 13, 53898, 1314, 3062, "Code",ExpressionUUID->"b9a81395-018d-43a6-a2bf-7865d5803458"],
+Cell[CellGroupData[{
+Cell[54323, 1331, 170, 3, 50, "Section",ExpressionUUID->"10ea175b-ae3c-4736-940a-e4707e5d1a92"],
+Cell[CellGroupData[{
+Cell[54518, 1338, 772, 16, 66, "Input",ExpressionUUID->"a5473fc9-e003-4feb-b099-062b94036ff6"],
+Cell[55293, 1356, 334, 4, 24, "Output",ExpressionUUID->"fd8b5a90-9f70-4e3a-9373-f0d65c41a337"],
+Cell[55630, 1362, 251, 3, 24, "Output",ExpressionUUID->"c37be41e-2204-4b6b-b88f-9fbe55269f3e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[55918, 1370, 171, 3, 34, "Subsubsection",ExpressionUUID->"4b45041b-9fcd-4108-9710-e3f9358a1d0f"],
+Cell[56092, 1375, 1468, 28, 181, "Text",ExpressionUUID->"d97fb93b-e301-4d92-8710-728a64ead398"],
+Cell[CellGroupData[{
+Cell[57585, 1407, 1923, 28, 21, "Input",ExpressionUUID->"2c175ffa-c8f0-4d38-8fdf-25b618d7821d"],
+Cell[59511, 1437, 344, 8, 43, "Print",ExpressionUUID->"22b58666-9bf6-44a6-978e-e71a1dd6fce9"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[59904, 1451, 200, 3, 41, "Subsection",ExpressionUUID->"e9da37be-8951-4a33-93d6-4d19807528b2"],
+Cell[CellGroupData[{
+Cell[60129, 1458, 13386, 335, 1052, "Input",ExpressionUUID->"9c84eebc-6015-4199-a4f5-8dc8037ccdc3"],
+Cell[73518, 1795, 447, 10, 69, "Print",ExpressionUUID->"1b0858b3-7baf-4a40-8efc-63a869066058"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[74026, 1812, 168, 3, 50, "Section",ExpressionUUID->"dccca51c-de6d-48ee-a327-b653c2e3f5ef"],
+Cell[74197, 1817, 815, 16, 37, "Input",ExpressionUUID->"d513b4c1-a710-4fd4-8f72-13b9657a4a4e"],
+Cell[CellGroupData[{
+Cell[75037, 1837, 291, 6, 22, "Input",ExpressionUUID->"0865d5fd-5e9c-4d1d-bbf0-bf4456129527"],
+Cell[75331, 1845, 197, 2, 24, "Output",ExpressionUUID->"87e00133-97eb-4cf3-90b1-b50f72775202"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[75565, 1852, 204, 3, 21, "Input",ExpressionUUID->"5baffabd-8758-4439-bfb2-087474d757f4"],
+Cell[75772, 1857, 225, 3, 24, "Output",ExpressionUUID->"4d7e6ca9-2cf2-4659-801f-f38af4d080e9"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[76034, 1865, 209, 3, 21, "Input",ExpressionUUID->"eae05195-04cc-4806-b7d8-e559fa42f46d"],
+Cell[76246, 1870, 432, 7, 24, "Output",ExpressionUUID->"d2f4eef5-bd72-488c-9dc8-2ad88365f727"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[76715, 1882, 388, 7, 22, "Input",ExpressionUUID->"89aa28e1-865b-4ece-8a93-6366cbd2a552"],
+Cell[77106, 1891, 224, 3, 24, "Output",ExpressionUUID->"fb874344-5241-40c7-9476-029c5ccb83cf"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[77367, 1899, 282, 4, 22, "Input",ExpressionUUID->"930a2e8d-ef0a-4670-bf95-93cdd45f0dbf"],
+Cell[77652, 1905, 375, 13, 107, "Print",ExpressionUUID->"6fef601e-3081-40fb-ab06-ba8cef1ff20f"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
