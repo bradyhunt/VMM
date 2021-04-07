@@ -1,0 +1,32 @@
+﻿Item,Manufacturer,Model / Part #,Price (each),Quantity,Total Cost
+CMOS Camera,FLIR Systems Inc.,BFS-U3–04S2M-CS,$365 ,1,$365 
+LED,LEDengin/Mouser,897-LZ1-10DB00-0100,$31.29 ,1,$31.29 
+Excitation Filter,Edmund Optics,84-705,$230 ,1,$230 
+Emission Filter,Semrock,FF01-550/88-25,$375 ,1,$375 
+Dichroic Mirror,Chroma Technology Corp.,AT485DC,$150 ,1,$150 
+Dichroic Mirror Optic Mount,Thorlabs Inc.,B5CT1,$35.99 ,1,$35.99 
+Objective Lens,Thorlabs Inc.,RMS10X,$382.35 ,1,$382.35 
+Objective Lens Adapter,Thorlabs Inc.,SM1A3,$18.50 ,1,$18.50 
+Tube Lens,Thorlabs Inc.,AC254-100-A-ML,$106.05 ,1,$106.05 
+Condenser Lens,Newport,KPA031-C,$60.00 ,1,$60.00 
+Right Angle Mirror Mount,Thorlabs Inc.,KCB1C,$147.29 ,1,$147.29 
+Mirror Unit,Thorlabs Inc.,PF10-03-G01,$53.58 ,1,$53.58 
+"⅓"" Lens Tube",Thorlabs Inc.,SM1L03,$13 ,1,$12.52 
+"0.5"" Lens Tube",Thorlabs Inc.,SM1L05,$12.97 ,1,$12.97 
+"1"" Lens Tubes",Thorlabs Inc.,SM1L10,$14.68 ,1,$14.68 
+Adapter with External C-Mount,Thorlabs Inc.,SM1A9,$19.96 ,1,$19.96 
+SM1 Coupler w/ O-Rings,Thorlabs Inc.,SM1T2,$21.54 ,2,$43.08 
+LED Driver,Digi-Key,788-1074-ND,$8.49 ,1,$8.49 
+Cage Cube Components,Thorlabs Inc.,"C6W, B3C, B1C,",$113.95 ,1,$113.95 
+Cage Rods,Thorlabs Inc.,"ER05-P4, ER1-P4, ER1.5-P4, ER2-P4, ER3-P4",$112 ,1,$112.14 
+Cage Plates,Thorlabs Inc.,CP33,$16.89 ,3,$50.67 
+Translation Mount,Thorlabs Inc.,SM1Z,$205.60 ,1,$205.60 
+SMA Fiber Adapter Plate with External SM1,Thorlabs Inc.,SM1SMA,$31.38 ,1,$31.38 
+Microcontroller,Arduino/Mouser,782-A000066,$22.00 ,1,$22.00 
+Arduino Shield,Adafruit/Amazon,Protoshield R3,$9.95 ,1,$9.95 
+Potentiometer,Bourns/Mouser,652-3296W-1-103LF,$2.87 ,1,$2.87 
+SM1-Threaded End Cap,Thorlabs Inc.,SM1CP2,$19.13 ,1,$19.13 
+Heat Sink,Digi-Key,1738-1006-ND,$0.88 ,1,$0.88 
+Fiber optic bundle,Fujikura,FIGH–30–850N,$745.25 ,1,$745.25 
+Camera Rotation Mount,Thorlabs Inc.,CRM1,$87.39 ,1,$87.39 
+Total,,,,,"$3,468 "
